@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kavarra — Your Property, Our Priority</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* ── RESET & BASE ──────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:      #111827;
+    --navy-mid:  #1e3a5f;
+    --navy-light:#2d5482;
+    --gold:      #c5a462;
+    --gold-light:#e2c97e;
+    --gold-pale: #f0dfa0;
+    --white:     #ede8df;
+    --grey:      #9aa5b8;
+    --bg:        #0d1117;
+    --card:      #161d2b;
+    --border:    rgba(197,164,98,0.2);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE ─────────────────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ── NAV ───────────────────────────────────────────────────── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(13,17,23,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 6px;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--grey);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* ── HERO ──────────────────────────────────────────────────── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 120px 48px 80px;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(197,164,98,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 80% at 0% 100%, rgba(30,58,95,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 100% 0%, rgba(30,58,95,0.3) 0%, transparent 60%);
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(197,164,98,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(197,164,98,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+
+  .hero-content { position: relative; z-index: 2; max-width: 800px; }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--white);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-sub {
+    font-size: 15px;
+    color: var(--grey);
+    max-width: 480px;
+    margin: 0 auto 48px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+
+  /* ── BUTTONS ───────────────────────────────────────────────── */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-decoration: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .btn-primary:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(197,164,98,0.3);
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    background: transparent;
+    color: var(--gold);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .btn-secondary:hover {
+    border-color: var(--gold);
+    background: rgba(197,164,98,0.05);
+  }
+
+  /* ── STATS ─────────────────────────────────────────────────── */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    padding: 40px 48px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: rgba(30,58,95,0.1);
+    flex-wrap: wrap;
+  }
+
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 40px;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+    display: block;
+  }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--grey);
+    margin-top: 6px;
+  }
+
+  /* ── SECTION ───────────────────────────────────────────────── */
+  section {
+    padding: 100px 48px;
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-tag {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--white);
+    margin-bottom: 20px;
+  }
+
+  .section-sub {
+    font-size: 15px;
+    color: var(--grey);
+    max-width: 560px;
+    margin-bottom: 56px;
+  }
+
+  /* ── SERVICES GRID ─────────────────────────────────────────── */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .service-card {
+    background: var(--card);
+    padding: 40px 36px;
+    transition: background 0.3s;
+    cursor: default;
+  }
+  .service-card:hover { background: rgba(30,58,95,0.5); }
+
+  .service-icon {
+    font-size: 28px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .service-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--white);
+    margin-bottom: 12px;
+  }
+
+  .service-desc {
+    font-size: 13px;
+    color: var(--grey);
+    line-height: 1.7;
+  }
+
+  /* ── FORM SECTION ──────────────────────────────────────────── */
+  .form-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .form-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  input, select, textarea {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    padding: 14px 18px;
+    transition: border-color 0.3s;
+    outline: none;
+    width: 100%;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--gold);
+    background: rgba(197,164,98,0.04);
+  }
+  select option { background: var(--navy); }
+  textarea { resize: vertical; min-height: 100px; }
+
+  input::placeholder, textarea::placeholder { color: rgba(154,165,184,0.5); }
+
+  /* Checkbox group */
+  .checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .checkbox-item:hover { border-color: var(--gold); }
+  .checkbox-item input[type="checkbox"] {
+    width: auto;
+    padding: 0;
+    accent-color: var(--gold);
+  }
+  .checkbox-item span { font-size: 13px; color: var(--grey); }
+
+  /* Time slots */
+  .time-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .time-slot {
+    padding: 10px 18px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    font-size: 13px;
+    color: var(--grey);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .time-slot:hover, .time-slot.selected {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(197,164,98,0.08);
+  }
+
+  /* Estimasi box */
+  .estimasi-box {
+    background: rgba(197,164,98,0.06);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 24px;
+    margin-top: 32px;
+    display: none;
+  }
+  .estimasi-box.show { display: block; }
+  .estimasi-title {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .estimasi-range {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  .estimasi-note {
+    font-size: 12px;
+    color: var(--grey);
+    line-height: 1.6;
+  }
+
+  /* Submit result */
+  .submit-result {
+    display: none;
+    text-align: center;
+    padding: 48px;
+  }
+  .submit-result.show { display: block; }
+  .ticket-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 48px;
+    color: var(--gold);
+    margin: 16px 0;
+  }
+
+  /* ── STATUS CHECKER ────────────────────────────────────────── */
+  .status-checker {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 60px;
+    position: relative;
+  }
+
+  .status-checker::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .status-input-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+  }
+  .status-input-row .form-group { flex: 1; }
+
+  .status-result {
+    margin-top: 40px;
+    display: none;
+  }
+  .status-result.show { display: block; }
+
+  /* Progress steps */
+  .progress-steps {
+    display: flex;
+    position: relative;
+    margin: 40px 0;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .progress-steps::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 100px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-dot {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.4s;
+  }
+
+  .step.active .step-dot {
+    border-color: var(--gold);
+    background: rgba(197,164,98,0.15);
+    box-shadow: 0 0 20px rgba(197,164,98,0.3);
+  }
+
+  .step.done .step-dot {
+    border-color: var(--gold);
+    background: var(--gold);
+    color: var(--navy);
+  }
+
+  .step-label {
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--grey);
+    text-align: center;
+    line-height: 1.4;
+  }
+  .step.active .step-label { color: var(--gold); }
+  .step.done .step-label { color: var(--gold-pale); }
+
+  /* Detail card */
+  .detail-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    padding: 32px;
+    margin-top: 24px;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(197,164,98,0.08);
+    gap: 20px;
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-key { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--grey); }
+  .detail-val { font-size: 14px; color: var(--white); text-align: right; }
+
+  /* ── REFERRAL CHECKER ──────────────────────────────────────── */
+  .referral-section {
+    background: rgba(197,164,98,0.04);
+    border: 1px solid var(--border);
+    padding: 60px;
+    position: relative;
+  }
+
+  .fee-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+    background: var(--border);
+    margin-top: 32px;
+  }
+
+  .fee-item {
+    background: var(--card);
+    padding: 32px;
+    text-align: center;
+  }
+
+  .fee-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--grey); margin-bottom: 12px; }
+  .fee-amount {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    color: var(--gold);
+  }
+  .fee-status { font-size: 12px; color: var(--grey); margin-top: 8px; }
+
+  /* ── FOOTER ────────────────────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 60px 48px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    letter-spacing: 8px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .footer-tagline {
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--grey);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .footer-contacts {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+
+  .footer-contact { font-size: 13px; color: var(--grey); }
+  .footer-contact span { color: var(--gold); }
+
+  .footer-copy { font-size: 11px; color: rgba(154,165,184,0.4); }
+
+  /* ── ANIMATIONS ────────────────────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(197,164,98,0.4); }
+    50%       { box-shadow: 0 0 0 8px rgba(197,164,98,0); }
+  }
+
+  .pulse { animation: pulse 2s infinite; }
+
+  /* ── TABS ──────────────────────────────────────────────────── */
+  .tab-bar {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+
+  .tab {
+    padding: 16px 32px;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--grey);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s;
+    margin-bottom: -1px;
+  }
+  .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .tab:hover { color: var(--white); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── DIVIDER ───────────────────────────────────────────────── */
+  .gold-divider {
+    width: 60px;
+    height: 1px;
+    background: var(--gold);
+    margin: 24px 0;
+  }
+
+  /* ── RESPONSIVE ────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    section { padding: 60px 24px; }
+    .form-section, .status-checker, .referral-section { padding: 32px 24px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .fee-card { grid-template-columns: 1fr; }
+    .stats-bar { gap: 32px; }
+    .status-input-row { flex-direction: column; }
+    .progress-steps { gap: 0; }
+  }
+
+  /* ── ALERT BOX ─────────────────────────────────────────────── */
+  .alert {
+    padding: 16px 20px;
+    border-radius: 2px;
+    font-size: 13px;
+    margin-top: 16px;
+    display: none;
+    border-left: 3px solid;
+  }
+  .alert.show { display: block; }
+  .alert-warn { background: rgba(255,152,0,0.08); border-color: #ff9800; color: #ffcc80; }
+  .alert-success { background: rgba(76,175,80,0.08); border-color: #4caf50; color: #a5d6a7; }
+  .alert-error { background: rgba(244,67,54,0.08); border-color: #f44336; color: #ef9a9a; }
+
+  /* ── LOADING ───────────────────────────────────────────────── */
+  .loading {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    color: var(--grey);
+    font-size: 13px;
+  }
+  .loading.show { display: flex; }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-brand">Kavarra</div>
+  <div class="nav-links">
+    <a href="#layanan">Layanan</a>
+    <a href="#request">Request Survey</a>
+    <a href="#status">Cek Status</a>
+    <a href="#referral">Referral</a>
+  </div>
+</nav>
+
+<!-- ── HERO ────────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">PIK2 — Jakarta Utara</p>
+    <h1 class="hero-title">
+      Your Property,<br>
+      <em>Our Priority.</em>
+    </h1>
+    <p class="hero-sub">
+      Spesialis renovasi, reparasi, desain interior, dan jual beli properti di kawasan PIK2.
+      Anda cukup duduk — kami yang urus semuanya.
+    </p>
+    <div class="hero-cta">
+      <a href="#request" class="btn-primary">📋 Request Survey Gratis</a>
+      <a href="#status" class="btn-secondary">🔍 Cek Status Tiket</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── STATS ────────────────────────────────────────────────── -->
+<div class="stats-bar">
+  <div class="stat">
+    <span class="stat-num">PIK2</span>
+    <span class="stat-label">Area Coverage</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">0%</span>
+    <span class="stat-label">Biaya Survey</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">48h</span>
+    <span class="stat-label">Maks. Respons</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">100%</span>
+    <span class="stat-label">Terima Beres</span>
+  </div>
+</div>
+
+<!-- ── LAYANAN ──────────────────────────────────────────────── -->
+<section id="layanan">
+  <p class="section-tag">— Apa yang kami kerjakan</p>
+  <h2 class="section-title">Layanan<br>Kavarra</h2>
+  <p class="section-sub">Dari reparasi kecil hingga renovasi total — satu nomor untuk semua kebutuhan properti PIK2 Anda.</p>
+
+  <div class="services-grid">
+    <div class="service-card">
+      <span class="service-icon">🎨</span>
+      <div class="service-name">Cat & Finishing</div>
+      <p class="service-desc">Cat dinding, plafon, kayu dan besi. Menggunakan cat premium pilihan dengan hasil rapi dan tahan lama.</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">🪟</span>
+      <div class="service-name">Renovasi Unit</div>
+      <p class="service-desc">Keramik, gypsum, waterproofing, partisi, dan perbaikan menyeluruh unit apartment, ruko, dan rumah.</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">🛁</span>
+      <div class="service-name">Kamar Mandi</div>
+      <p class="service-desc">Renovasi full kamar mandi — keramik, kloset, shower, wastafel, waterproofing, hingga instalasi water heater.</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">⚡</span>
+      <div class="service-name">Instalasi Listrik</div>
+      <p class="service-desc">Pasang stop kontak, lampu, perbaikan instalasi, dan instalasi AC. Dikerjakan oleh teknisi berpengalaman.</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">🪑</span>
+      <div class="service-name">Furniture Custom</div>
+      <p class="service-desc">Kitchen set, lemari built-in, meja kerja, dan partisi ruangan. Desain sesuai kebutuhan dan ukuran unit.</p>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">🏢</span>
+      <div class="service-name">Jual Beli & Sewa</div>
+      <p class="service-desc">Bantu carikan pembeli atau penyewa unit PIK2. Fee hanya dibayar jika deal berhasil. Tidak ada biaya di muka.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FORM & STATUS TABS ────────────────────────────────────── -->
+<section id="request" style="padding-top: 0">
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab('form')">📋 Request Survey</div>
+    <div class="tab" onclick="switchTab('status')">🔍 Cek Status Tiket</div>
+    <div class="tab" onclick="switchTab('referral')">💼 Cek Referral Fee</div>
+  </div>
+
+  <!-- ── TAB: FORM REQUEST ──────────────────────────────────── -->
+  <div class="tab-content active" id="tab-form">
+    <div class="form-section">
+      <p class="section-tag">— Gratis, tanpa komitmen</p>
+      <h2 class="section-title" style="font-size:clamp(28px,4vw,44px)">Request Survey Unit</h2>
+      <p class="section-sub" style="margin-bottom:40px">
+        Isi form di bawah dan tim Kavarra akan mengkonfirmasi jadwal survey dalam waktu 24 jam.
+        Survey <b style="color:var(--gold)">GRATIS</b> tanpa biaya apapun.
+      </p>
+
+      <div id="form-area">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nama Lengkap *</label>
+            <input type="text" id="f-nama" placeholder="Nama Anda">
+          </div>
+          <div class="form-group">
+            <label>Nomor WhatsApp *</label>
+            <input type="tel" id="f-wa" placeholder="08xx xxxx xxxx">
+          </div>
+          <div class="form-group full">
+            <label>Nomor Unit / Alamat *</label>
+            <input type="text" id="f-unit" placeholder="Contoh: Tokyo Riverside Tower A Lt.12 No.1205">
+          </div>
+          <div class="form-group full">
+            <label>Jenis Pekerjaan * (pilih semua yang sesuai)</label>
+            <div class="checkbox-grid">
+              <label class="checkbox-item"><input type="checkbox" value="Cat Dinding"><span>🎨 Cat Dinding</span></label>
+              <label class="checkbox-item"><input type="checkbox" value="Cat Plafon"><span>🪟 Cat Plafon</span></label>
+              <label class="checkbox-item"><input type="checkbox" value="Keramik"><span>🏠 Keramik</span></label>
+              <label class="checkbox-item"><input type="checkbox" value="Gypsum/Plafon"><span>📐 Gypsum/Plafon</span></label>
+              <label class="checkbox-item"><input type="checkbox" value="Kamar Mandi"><span>🛁 Kamar Mandi</span></label>
+              <label class="checkbox-item"><input type="checkbox" value="Listrik"><span>⚡ Listrik</span></label>
+              <label class="checkbox-item"><input type="checkbox" value="Pintu/Jendela"><span>🚪 Pintu/Jendela</span></label>
+              <label class="checkbox-item"><input type="checkbox" value="Furniture"><span>🪑 Furniture</span></label>
+              <label class="checkbox-item"><input type="checkbox" value="Reparasi Umum"><span>🔧 Reparasi Umum</span></label>
+              <label class="checkbox-item"><input type="checkbox" value="Lainnya"><span>➕ Lainnya</span></label>
+            </div>
+          </div>
+          <div class="form-group full">
+            <label>Deskripsi Kerusakan / Kebutuhan *</label>
+            <textarea id="f-desc" placeholder="Ceritakan kondisi unit Anda secara singkat..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Pilih Hari Survey *</label>
+            <input type="date" id="f-tanggal" min="">
+          </div>
+          <div class="form-group">
+            <label>Pilih Jam Survey *</label>
+            <div class="time-grid" id="time-slots">
+              <div class="time-slot" onclick="pilihJam(this)">09:00</div>
+              <div class="time-slot" onclick="pilihJam(this)">10:00</div>
+              <div class="time-slot" onclick="pilihJam(this)">11:00</div>
+              <div class="time-slot" onclick="pilihJam(this)">13:00</div>
+              <div class="time-slot" onclick="pilihJam(this)">14:00</div>
+              <div class="time-slot" onclick="pilihJam(this)">15:00</div>
+              <div class="time-slot" onclick="pilihJam(this)">16:00</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Referrer (opsional)</label>
+            <input type="text" id="f-referrer" placeholder="Nama yang merekomendasikan Kavarra">
+          </div>
+          <div class="form-group">
+            <label>Dari mana tahu Kavarra?</label>
+            <select id="f-sumber">
+              <option value="">— Pilih —</option>
+              <option>TikTok</option>
+              <option>Instagram</option>
+              <option>WhatsApp</option>
+              <option>Referral Teman</option>
+              <option>OLX</option>
+              <option>Google</option>
+              <option>Lainnya</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Estimasi box -->
+        <div class="estimasi-box" id="estimasi-box">
+          <p class="estimasi-title">— Estimasi Harga Kasar</p>
+          <div class="estimasi-range" id="estimasi-range">Rp 0</div>
+          <p class="estimasi-note">
+            ⚠️ <b>Ini bukan harga final.</b> Estimasi ini hanya gambaran awal berdasarkan jenis pekerjaan yang dipilih.
+            Harga resmi akan diberikan oleh tim Kavarra setelah survey langsung ke unit Anda dan dapat berbeda sesuai kondisi aktual.
+          </p>
+        </div>
+
+        <div class="alert alert-warn" id="alert-form"></div>
+        <div class="loading" id="loading-form">
+          <div class="spinner"></div> Mengirim request...
+        </div>
+
+        <div style="margin-top:32px;display:flex;gap:16px;flex-wrap:wrap">
+          <button class="btn-primary pulse" onclick="submitForm()">
+            📋 Kirim Request Survey
+          </button>
+          <span style="font-size:12px;color:var(--grey);align-self:center">
+            Tim kami akan konfirmasi dalam 24 jam
+          </span>
+        </div>
+      </div>
+
+      <!-- Submit success -->
+      <div class="submit-result" id="submit-result">
+        <div style="font-size:48px;margin-bottom:16px">✅</div>
+        <p style="font-size:12px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:8px">Request Diterima</p>
+        <div class="ticket-number" id="result-ticket">KVR-001</div>
+        <p style="color:var(--grey);margin-bottom:8px">Simpan nomor tiket ini untuk cek status request Anda</p>
+        <p style="color:var(--grey);font-size:13px">Tim Kavarra akan mengkonfirmasi jadwal survey via WhatsApp dalam 24 jam</p>
+        <div class="gold-divider" style="margin:32px auto"></div>
+        <p style="font-size:13px;color:var(--grey)">
+          Ada pertanyaan? Hubungi langsung:<br>
+          📲 <b style="color:var(--white)">0851 1738 7838</b>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: STATUS ────────────────────────────────────────── -->
+  <div class="tab-content" id="tab-status" id="status">
+    <div class="status-checker">
+      <p class="section-tag">— Real-time update</p>
+      <h2 class="section-title" style="font-size:clamp(28px,4vw,44px)">Cek Status Tiket</h2>
+      <p style="color:var(--grey);font-size:14px;margin-bottom:40px">
+        Masukkan nomor tiket yang Anda terima via email atau WhatsApp
+      </p>
+
+      <div class="status-input-row">
+        <div class="form-group">
+          <label>Nomor Tiket</label>
+          <input type="text" id="s-tiket" placeholder="KVR-001" style="text-transform:uppercase">
+        </div>
+        <div class="form-group">
+          <label>Nomor WA (verifikasi)</label>
+          <input type="tel" id="s-wa" placeholder="08xx xxxx xxxx">
+        </div>
+        <button class="btn-primary" onclick="cekStatus()" style="height:50px;white-space:nowrap">
+          🔍 Cek Status
+        </button>
+      </div>
+
+      <div class="alert" id="alert-status"></div>
+      <div class="loading" id="loading-status">
+        <div class="spinner"></div> Mengambil data...
+      </div>
+
+      <div class="status-result" id="status-result">
+        <div class="progress-steps" id="progress-steps"></div>
+
+        <div class="detail-card" id="detail-card"></div>
+
+        <!-- Edit request (dalam 24 jam) -->
+        <div id="edit-area" style="margin-top:24px;display:none">
+          <div class="alert alert-warn show">
+            ✏️ Anda masih dapat mengubah jadwal survey (tersedia <b id="sisa-waktu"></b>).
+            Untuk perubahan, hubungi langsung: 📲 <b>0851 1738 7838</b>
+          </div>
+        </div>
+
+        <div id="portofolio-mini" style="margin-top:40px">
+          <p style="font-size:11px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:20px">— Hasil Kerja Kavarra</p>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px">
+            <div style="background:rgba(197,164,98,0.08);height:120px;display:flex;align-items:center;justify-content:center;font-size:32px">🏠</div>
+            <div style="background:rgba(197,164,98,0.05);height:120px;display:flex;align-items:center;justify-content:center;font-size:32px">🛁</div>
+            <div style="background:rgba(197,164,98,0.08);height:120px;display:flex;align-items:center;justify-content:center;font-size:32px">🎨</div>
+          </div>
+          <p style="font-size:11px;color:var(--grey);text-align:center;margin-top:12px">Foto portofolio aktual akan ditambahkan setelah proyek pertama selesai</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: REFERRAL ─────────────────────────────────────── -->
+  <div class="tab-content" id="tab-referral" id="referral">
+    <div class="referral-section">
+      <p class="section-tag">— Program referral Kavarra</p>
+      <h2 class="section-title" style="font-size:clamp(28px,4vw,44px)">Cek Referral Fee</h2>
+      <p style="color:var(--grey);font-size:14px;margin-bottom:16px">
+        Rekomendasikan Kavarra dan dapatkan komisi setiap proyek berhasil.
+      </p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:40px">
+        <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);padding:24px">
+          <p style="font-size:11px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:12px">Agent Properti</p>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--white)">5%</p>
+          <p style="font-size:13px;color:var(--grey);margin-top:8px">dari total nilai proyek</p>
+        </div>
+        <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);padding:24px">
+          <p style="font-size:11px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:12px">Customer Biasa</p>
+          <p style="font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--white)">Rp 250rb</p>
+          <p style="font-size:13px;color:var(--grey);margin-top:8px">flat per referral yang closing</p>
+        </div>
+      </div>
+
+      <p style="font-size:13px;color:var(--grey);margin-bottom:32px">
+        💡 Fee dibayarkan bersamaan dengan pelunasan proyek. Hanya berlaku jika proyek deal dan DP diterima.
+      </p>
+
+      <div class="status-input-row">
+        <div class="form-group">
+          <label>Kode Referral Anda</label>
+          <input type="text" id="r-kode" placeholder="REF-ST01" style="text-transform:uppercase">
+        </div>
+        <div class="form-group">
+          <label>Nomor WA Anda</label>
+          <input type="tel" id="r-wa" placeholder="08xx xxxx xxxx">
+        </div>
+        <button class="btn-primary" onclick="cekReferral()" style="height:50px;white-space:nowrap">
+          💼 Cek Fee
+        </button>
+      </div>
+
+      <div class="alert" id="alert-referral"></div>
+      <div class="loading" id="loading-referral">
+        <div class="spinner"></div> Mengambil data referral...
+      </div>
+
+      <div id="referral-result" style="display:none;margin-top:32px">
+        <div class="fee-card">
+          <div class="fee-item">
+            <p class="fee-label">Total Referral</p>
+            <p class="fee-amount" id="ref-total-count">0</p>
+            <p class="fee-status">proyek</p>
+          </div>
+          <div class="fee-item">
+            <p class="fee-label">Fee Pending</p>
+            <p class="fee-amount" id="ref-pending">Rp 0</p>
+            <p class="fee-status">akan cair saat proyek selesai</p>
+          </div>
+          <div class="fee-item">
+            <p class="fee-label">Fee Dibayar</p>
+            <p class="fee-amount" id="ref-dibayar">Rp 0</p>
+            <p class="fee-status">sudah diterima</p>
+          </div>
+        </div>
+        <div class="alert alert-success show" style="margin-top:16px">
+          ✅ Data referral Anda ditemukan. Untuk pertanyaan lebih lanjut, hubungi Steven: 📲 <b>0851 1738 7838</b>
+        </div>
+      </div>
+
+      <div class="gold-divider" style="margin-top:48px"></div>
+      <p style="font-size:13px;color:var(--grey);margin-top:24px">
+        Belum punya kode referral? Hubungi kami untuk mendaftar sebagai referrer Kavarra.<br>
+        📲 <b style="color:var(--white)">0851 1738 7838</b>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ───────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-brand">Kavarra</div>
+  <div class="footer-tagline">Your Property, Our Priority</div>
+  <div class="footer-contacts">
+    <div class="footer-contact">📲 <span>0851 1738 7838</span></div>
+    <div class="footer-contact">✉️ <span>kavarra666@gmail.com</span></div>
+    <div class="footer-contact">📍 <span>PIK2, Jakarta Utara</span></div>
+  </div>
+  <div class="footer-copy">© 2025 Kavarra Property & Renovation. All rights reserved.</div>
+</footer>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────
+let selectedJam = '';
+let requestCounter = 1;
+
+// ── INIT ───────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  // Set min date to tomorrow
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  document.getElementById('f-tanggal').min = tomorrow.toISOString().split('T')[0];
+
+  // Listen to checkbox changes for estimasi
+  document.querySelectorAll('.checkbox-item input').forEach(cb => {
+    cb.addEventListener('change', updateEstimasi);
+  });
+});
+
+// ── TABS ───────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const tabs = ['form','status','referral'];
+    t.classList.toggle('active', tabs[i] === tab);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => {
+    c.classList.remove('active');
+  });
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+// ── JAM SURVEY ─────────────────────────────────────────────────
+function pilihJam(el) {
+  document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedJam = el.textContent;
+}
+
+// ── ESTIMASI ────────────────────────────────────────────────────
+const HARGA_ESTIMASI = {
+  'Cat Dinding': [1500000, 2500000],
+  'Cat Plafon': [800000, 1200000],
+  'Keramik': [2000000, 4000000],
+  'Gypsum/Plafon': [1500000, 2500000],
+  'Kamar Mandi': [4000000, 8000000],
+  'Listrik': [800000, 2000000],
+  'Pintu/Jendela': [1200000, 2500000],
+  'Furniture': [2500000, 6000000],
+  'Reparasi Umum': [500000, 1500000],
+  'Lainnya': [500000, 2000000],
+};
+
+function updateEstimasi() {
+  const checked = [...document.querySelectorAll('.checkbox-item input:checked')]
+    .map(cb => cb.value);
+
+  if (checked.length === 0) {
+    document.getElementById('estimasi-box').classList.remove('show');
+    return;
+  }
+
+  let minTotal = 0, maxTotal = 0;
+  checked.forEach(item => {
+    if (HARGA_ESTIMASI[item]) {
+      minTotal += HARGA_ESTIMASI[item][0];
+      maxTotal += HARGA_ESTIMASI[item][1];
+    }
+  });
+
+  document.getElementById('estimasi-range').textContent =
+    'Rp ' + formatRp(minTotal) + ' — Rp ' + formatRp(maxTotal);
+  document.getElementById('estimasi-box').classList.add('show');
+}
+
+// ── SUBMIT FORM ────────────────────────────────────────────────
+function submitForm() {
+  const nama  = document.getElementById('f-nama').value.trim();
+  const wa    = document.getElementById('f-wa').value.trim();
+  const unit  = document.getElementById('f-unit').value.trim();
+  const desc  = document.getElementById('f-desc').value.trim();
+  const tgl   = document.getElementById('f-tanggal').value;
+  const checked = [...document.querySelectorAll('.checkbox-item input:checked')];
+
+  const alertEl = document.getElementById('alert-form');
+
+  if (!nama) { showAlert(alertEl, 'warn', 'Nama lengkap wajib diisi.'); return; }
+  if (!wa)   { showAlert(alertEl, 'warn', 'Nomor WhatsApp wajib diisi.'); return; }
+  if (!unit) { showAlert(alertEl, 'warn', 'Nomor unit / alamat wajib diisi.'); return; }
+  if (checked.length === 0) { showAlert(alertEl, 'warn', 'Pilih minimal satu jenis pekerjaan.'); return; }
+  if (!desc) { showAlert(alertEl, 'warn', 'Deskripsi kebutuhan wajib diisi.'); return; }
+  if (!tgl)  { showAlert(alertEl, 'warn', 'Pilih tanggal survey.'); return; }
+  if (!selectedJam) { showAlert(alertEl, 'warn', 'Pilih jam survey.'); return; }
+
+  alertEl.classList.remove('show');
+  document.getElementById('loading-form').classList.add('show');
+
+  // Simulate API call (ganti dengan Google Form action URL saat production)
+  setTimeout(() => {
+    document.getElementById('loading-form').classList.remove('show');
+    const noTiket = 'KVR-' + String(requestCounter++).padStart(3, '0');
+    document.getElementById('result-ticket').textContent = noTiket;
+    document.getElementById('form-area').style.display = 'none';
+    document.getElementById('submit-result').classList.add('show');
+
+    // Simpan ke localStorage untuk demo cek status
+    const data = {
+      tiket: noTiket,
+      nama, wa, unit,
+      jenis: checked.map(cb => cb.value).join(', '),
+      desc, tgl, jam: selectedJam,
+      status: 'Pending Konfirmasi',
+      submitTime: Date.now()
+    };
+    localStorage.setItem('kavarra_' + noTiket, JSON.stringify(data));
+    localStorage.setItem('kavarra_last', noTiket);
+  }, 1800);
+}
+
+// ── CEK STATUS ─────────────────────────────────────────────────
+function cekStatus() {
+  const tiket = document.getElementById('s-tiket').value.trim().toUpperCase();
+  const wa    = document.getElementById('s-wa').value.trim();
+  const alertEl = document.getElementById('alert-status');
+
+  if (!tiket) { showAlert(alertEl, 'warn', 'Masukkan nomor tiket.'); return; }
+  if (!wa)    { showAlert(alertEl, 'warn', 'Masukkan nomor WhatsApp untuk verifikasi.'); return; }
+
+  alertEl.classList.remove('show');
+  document.getElementById('loading-status').classList.add('show');
+
+  setTimeout(() => {
+    document.getElementById('loading-status').classList.remove('show');
+
+    const savedData = localStorage.getItem('kavarra_' + tiket);
+
+    if (savedData) {
+      const data = JSON.parse(savedData);
+      renderStatus(data);
+    } else {
+      // Demo data jika tidak ada di localStorage
+      if (tiket.startsWith('KVR-')) {
+        renderStatus({
+          tiket, nama: 'Data dari Google Sheets',
+          unit: 'Unit PIK2', jenis: 'Renovasi',
+          tgl: '2025-06-01', jam: '10:00',
+          status: 'Pending Konfirmasi',
+          submitTime: Date.now() - 3600000
+        });
+      } else {
+        showAlert(alertEl, 'error', 'Tiket tidak ditemukan. Pastikan nomor tiket dan WA sudah benar.');
+      }
+    }
+  }, 1200);
+}
+
+function renderStatus(data) {
+  const STEPS = [
+    { key: 'Pending Konfirmasi',          label: 'Request\nMasuk',       icon: '📋' },
+    { key: 'Survey Dijadwalkan',          label: 'Survey\nDijadwalkan',  icon: '📅' },
+    { key: 'Survey Selesai',              label: 'Survey\nSelesai',      icon: '🔍' },
+    { key: 'Menunggu DP',                 label: 'Menunggu\nDP',         icon: '💳' },
+    { key: 'Pengerjaan Aktif',            label: 'Pengerjaan\nBerjalan', icon: '🏗️' },
+    { key: 'Selesai',                     label: 'Selesai',              icon: '✅' },
+  ];
+
+  const currentIdx = STEPS.findIndex(s => s.key === data.status);
+
+  // Render progress steps
+  const stepsEl = document.getElementById('progress-steps');
+  stepsEl.innerHTML = STEPS.map((step, i) => {
+    const cls = i < currentIdx ? 'done' : i === currentIdx ? 'active' : '';
+    return `<div class="step ${cls}">
+      <div class="step-dot">${i < currentIdx ? '✓' : step.icon}</div>
+      <div class="step-label">${step.label}</div>
+    </div>`;
+  }).join('');
+
+  // Render detail
+  const elapsed = Math.floor((Date.now() - data.submitTime) / 3600000);
+  const sisaJam = Math.max(0, 24 - elapsed);
+
+  const details = [
+    ['No. Tiket', `<b style="color:var(--gold)">${data.tiket}</b>`],
+    ['Status', `<b>${data.status}</b>`],
+    ['Nama', data.nama],
+    ['Unit / Lokasi', data.unit],
+    ['Jenis Pekerjaan', data.jenis || '-'],
+    ['Jadwal Survey', data.tgl + ' pukul ' + data.jam],
+  ];
+
+  document.getElementById('detail-card').innerHTML = details.map(([k,v]) =>
+    `<div class="detail-row"><span class="detail-key">${k}</span><span class="detail-val">${v}</span></div>`
+  ).join('');
+
+  // Show edit option if within 24 hours
+  const editArea = document.getElementById('edit-area');
+  if (sisaJam > 0 && data.status === 'Pending Konfirmasi') {
+    document.getElementById('sisa-waktu').textContent = sisaJam + ' jam lagi';
+    editArea.style.display = 'block';
+  } else {
+    editArea.style.display = 'none';
+  }
+
+  document.getElementById('status-result').classList.add('show');
+}
+
+// ── CEK REFERRAL ────────────────────────────────────────────────
+function cekReferral() {
+  const kode = document.getElementById('r-kode').value.trim().toUpperCase();
+  const wa   = document.getElementById('r-wa').value.trim();
+  const alertEl = document.getElementById('alert-referral');
+
+  if (!kode) { showAlert(alertEl, 'warn', 'Masukkan kode referral Anda.'); return; }
+  if (!wa)   { showAlert(alertEl, 'warn', 'Masukkan nomor WhatsApp Anda.'); return; }
+
+  alertEl.classList.remove('show');
+  document.getElementById('loading-referral').classList.add('show');
+
+  setTimeout(() => {
+    document.getElementById('loading-referral').classList.remove('show');
+
+    if (kode.startsWith('REF-')) {
+      // Demo data — in production, fetch from Google Sheets API
+      document.getElementById('ref-total-count').textContent = '3';
+      document.getElementById('ref-pending').textContent = 'Rp 750.000';
+      document.getElementById('ref-dibayar').textContent = 'Rp 500.000';
+      document.getElementById('referral-result').style.display = 'block';
+    } else {
+      showAlert(alertEl, 'error', 'Kode referral tidak valid. Format: REF-XX01');
+    }
+  }, 1000);
+}
+
+// ── HELPERS ────────────────────────────────────────────────────
+function showAlert(el, type, msg) {
+  el.className = `alert alert-${type} show`;
+  el.textContent = msg;
+}
+
+function formatRp(num) {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+</script>
+</body>
+</html>
